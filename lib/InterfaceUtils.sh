@@ -21,7 +21,7 @@ interface_is_real() {
     echo "Error: No interface specified" >&2
     return 2
   fi
-  test -d /sys/class/net/$1/device
+  test -d "/sys/class/net/$1/device"
   return $?
 }
 
@@ -31,7 +31,7 @@ interface_is_wireless() {
     echo "Error: No interface specified" >&2
     return 2
   fi
-  grep -qs "DEVTYPE=wlan" /sys/class/net/$1/uevent
+  grep -qs "DEVTYPE=wlan" "/sys/class/net/$1/uevent"
   return $?
 }
 
@@ -41,7 +41,7 @@ interface_exists() {
     echo "Error: No interface specified" >&2
     return 2
   fi
-  test -d /sys/class/net/$1
+  test -d "/sys/class/net/$1"
   return $?
 }
 
@@ -71,7 +71,7 @@ interface_list_real() {
   interface_list_all
   local __interface_list_real__candidate
   for __interface_list_real__candidate in "${InterfaceListAll[@]}"; do
-    if interface_is_real $__interface_list_real__candidate; then InterfaceListReal+=("$__interface_list_real__candidate")
+    if interface_is_real "$__interface_list_real__candidate"; then InterfaceListReal+=("$__interface_list_real__candidate")
     fi
   done
 }

@@ -68,7 +68,8 @@ format_calculate_statics_length() {
 # Literals are all characters in format printed literally.
 # Parameters: $1 - format [$2 - processed format [$3 - specifier array]]
 format_calculate_literals_length() {
-  local __format_calculate_literals_length__normalizedFormat="$(echo "$2" | sed -r 's/%%|\*\*/X/g')"
+  local __format_calculate_literals_length__normalizedFormat
+  __format_calculate_literals_length__normalizedFormat="$(echo "$2" | sed -r 's/%%|\*\*/X/g')"
   local __format_calculate_literals_length__specifiers=("${!3}")
 
   if [[ ! "$2" ]]; then
@@ -83,7 +84,9 @@ format_calculate_literals_length() {
     __format_calculate_literals_length__specifiers=("${FormatListSpecifiers[@]}")
   fi
 
-  FormatCalculateLiteralsLength=$((${#__format_calculate_literals_length__normalizedFormat} - ($(echo "${__format_calculate_literals_length__specifiers[@]}" | wc -m) - ${#__format_calculate_literals_length__specifiers[@]})))
+  # Calculate total length minus the length of all specifier strings
+  # Each specifier is 2 characters (e.g., %s, %d, etc.)
+  FormatCalculateLiteralsLength=$((${#__format_calculate_literals_length__normalizedFormat} - ${#__format_calculate_literals_length__specifiers[@]}))
 }
 
 # This function calculates the total length of statics & literals in format.
@@ -125,7 +128,7 @@ format_calculate_dynamics_length() {
     __format_calculate_dynamics_length__formatLength=$FormatCalculateLength
   fi
 
-  FormatCalculateDynamicsLength=$(($(tput cols) - $__format_calculate_dynamics_length__formatLength))
+  FormatCalculateDynamicsLength=$(($(tput cols) - __format_calculate_dynamics_length__formatLength))
 }
 
 # This function calculates the size of individual dynamics in format.
@@ -165,9 +168,9 @@ format_calculate_autosize_length() {
 format_apply_autosize() {
   format_calculate_autosize_length "${@}" # Pass all arguments on.
   FormatApplyAutosize=$1
-  let format_apply_autosize_overcount=$FormatCalculateDynamicsLength%$FormatCalculateDynamicsCount
+  (( format_apply_autosize_overcount=FormatCalculateDynamicsLength%FormatCalculateDynamicsCount ))
   if [[ $format_apply_autosize_overcount -gt 0 ]]; then # If we've got left-over, fill it left-to-right.
-    let format_apply_autosize_oversize=$FormatCalculateAutosizeLength+1
+    (( format_apply_autosize_oversize=FormatCalculateAutosizeLength+1 ))
     FormatApplyAutosize=$(echo "$FormatApplyAutosize" | sed -r 's/(^|[^*])\*(\.\*|[^*]|$)/\1'$format_apply_autosize_oversize'\2/'$format_apply_autosize_overcount'; s/([0-9]+\.)\*/\1'$format_apply_autosize_oversize'/'$format_apply_autosize_overcount)
   fi
   FormatApplyAutosize=$(echo "$FormatApplyAutosize" | sed -r 's/\*\.\*/'$FormatCalculateAutosizeLength'.'$FormatCalculateAutosizeLength'/g; s/(^|[^*])\*([^*]|$)/\1'$FormatCalculateAutosizeLength'\2/g; s/\*\*/*/g')

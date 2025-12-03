@@ -14,19 +14,19 @@ SandboxOutputDevice="/dev/stdout"
 sandbox_remove_workfile() {
   # Check we've got the environment variables ready.
   if [[ -z "$SandboxWorkspacePath" || -z "$SandboxOutputDevice" ]]; then
-    echo "The workspace path, or the output device is missing." >$SandboxOutputDevice
+    echo "The workspace path, or the output device is missing." >"$SandboxOutputDevice"
     return 1
   fi
 
   # Additional safety check: workspace path must be in /tmp
   if [[ "$SandboxWorkspacePath" != /tmp/* ]]; then
-    echo "Security Error: Workspace path must be in /tmp" >$SandboxOutputDevice
+    echo "Security Error: Workspace path must be in /tmp" >"$SandboxOutputDevice"
     return 4
   fi
 
   # Check we're actually deleting a workfile.
   if [[ "$1" != $SandboxWorkspacePath* ]]; then
-    echo "Stopped an attempt to delete non-workfiles." >$SandboxOutputDevice
+    echo "Stopped an attempt to delete non-workfiles." >"$SandboxOutputDevice"
     return 2
   fi
 
@@ -34,7 +34,7 @@ sandbox_remove_workfile() {
   local dangerous_paths=("/" "/bin" "/boot" "/dev" "/etc" "/home" "/lib" "/proc" "/root" "/sbin" "/sys" "/usr" "/var")
   for path in "${dangerous_paths[@]}"; do
     if [[ "$1" == "$path" || "$1" == "$path/"* ]]; then
-      echo "Security Error: Attempt to delete protected path blocked" >$SandboxOutputDevice
+      echo "Security Error: Attempt to delete protected path blocked" >"$SandboxOutputDevice"
       return 5
     fi
   done
@@ -46,20 +46,21 @@ sandbox_remove_workfile() {
   #fi
 
   # Remove the target file (do NOT force it).
-  eval "rm -r $1 &> $SandboxOutputDevice"
+  eval "rm -r $1 &> \"$SandboxOutputDevice\""
 }
 
 # Create a secure temporary file with proper permissions
 sandbox_create_tempfile() {
   local prefix="${1:-fluxion}"
-  local tempfile=$(mktemp -p "$SandboxWorkspacePath" "${prefix}_XXXXXX")
+  local tempfile
+  tempfile=$(mktemp -p "$SandboxWorkspacePath" "${prefix}_XXXXXX")
   
   if [ $? -eq 0 ]; then
     chmod 600 "$tempfile"
     echo "$tempfile"
     return 0
   else
-    echo "Error: Failed to create temporary file" >$SandboxOutputDevice
+    echo "Error: Failed to create temporary file" >"$SandboxOutputDevice"
     return 1
   fi
 }
@@ -67,14 +68,15 @@ sandbox_create_tempfile() {
 # Create a secure temporary directory with proper permissions
 sandbox_create_tempdir() {
   local prefix="${1:-fluxion}"
-  local tempdir=$(mktemp -d -p "$SandboxWorkspacePath" "${prefix}_XXXXXX")
+  local tempdir
+  tempdir=$(mktemp -d -p "$SandboxWorkspacePath" "${prefix}_XXXXXX")
   
   if [ $? -eq 0 ]; then
     chmod 700 "$tempdir"
     echo "$tempdir"
     return 0
   else
-    echo "Error: Failed to create temporary directory" >$SandboxOutputDevice
+    echo "Error: Failed to create temporary directory" >"$SandboxOutputDevice"
     return 1
   fi
 }
@@ -85,7 +87,7 @@ sandbox_secure_remove() {
   
   # Verify it's in the workspace
   if [[ "$target" != $SandboxWorkspacePath* ]]; then
-    echo "Security Error: File not in workspace" >$SandboxOutputDevice
+    echo "Security Error: File not in workspace" >"$SandboxOutputDevice"
     return 1
   fi
   

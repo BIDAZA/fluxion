@@ -15,15 +15,15 @@ fi
 
 io_input_choice() {
   local __io_input_choice__choice
-  until [[ ! -z "$__io_input_choice__choice" ]]; do
+  until [[ -n "$__io_input_choice__choice" ]]; do
     echo -ne "$IOUtilsPrompt"
 
     local __io_input_choice__input
-    read __io_input_choice__input
+    read -r __io_input_choice__input
 
     local __io_input_choice__choices
-    for __io_input_choice__choices in ${@}; do
-      array_contains $__io_input_choice__choices "$__io_input_choice__input"
+    for __io_input_choice__choices in "${@}"; do
+      array_contains "$__io_input_choice__choices" "$__io_input_choice__input"
       if [[ $? -eq 0 ]]; then
         __io_input_choice__choice="$__io_input_choice__input"
         break
