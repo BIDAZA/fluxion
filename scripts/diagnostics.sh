@@ -5,24 +5,24 @@ declare -r HEADER_SIZE="####"
 
 # Diagnostic script
 
-if [ -d "lib" ];then
+if [[ -d "lib" ]]; then
 	source lib/InterfaceUtils.sh
     source lib/ChipsetUtils.sh
-elif [ -d "../lib" ];then
+elif [[ -d "../lib" ]]; then
 	source ../lib/InterfaceUtils.sh
     source ../lib/ChipsetUtils.sh
 else
-  echo -e "\033[31mError lib folder not found\033[0m"
+  printf "\033[31mError lib folder not found\033[0m\n"
   exit 1
 fi
 
-if [ ! "$1" ]; then
-  echo -e "\033[32mUsage ./scripts/diagnostics [wireless_interface]\033[0m"
+if [[ ! "$1" ]]; then
+  printf "\033[32mUsage ./scripts/diagnostics [wireless_interface]\033[0m\n"
   exit 1
 fi
 
 echo "$HEADER_SIZE FLUXION Info"
-if [ -f "fluxion.sh" ];then
+if [[ -f "fluxion.sh" ]]; then
 	declare -r FLUXIONInfo=($(grep -oE "FLUXION(Version|Revision)=[0-9]+" fluxion.sh))
 else
 	declare -r FLUXIONInfo=($(grep -oE "FLUXION(Version|Revision)=[0-9]+" ../fluxion.sh))
@@ -97,7 +97,7 @@ echo -ne "\n"
 
 # System info
 echo "$HEADER_SIZE System Info"
-if [ -r "/proc/version" ]; then
+if [[ -r "/proc/version" ]]; then
 	echo "**Chipset:** $(cat /proc/version)"
 else
 	echo "**Chipset:** $(uname -r)"

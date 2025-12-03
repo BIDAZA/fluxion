@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ -f "/etc/gentoo-release" ]; then
+if [[ -f "/etc/gentoo-release" ]]; then
   PackageManagerCLT="emerge"
   PackageManagerCLTInstallOptions="-s"
   PackageManagerCLTRemoveOptions=""

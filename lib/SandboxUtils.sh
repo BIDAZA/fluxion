@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$SandboxUtilsVersion" ]; then return 0; fi
+if [[ "$SandboxUtilsVersion" ]]; then return 0; fi
 readonly SandboxUtilsVersion="1.0"
 
 SandboxWorkspacePath="/tmp/sandbox"
@@ -11,7 +11,7 @@ SandboxOutputDevice="/dev/stdout"
 # horrific accident where the script ended and executed
 # the command "rm -rf /*" ... yeah, fuck that...
 # Spent an entire day retreiving all my shit back.
-function sandbox_remove_workfile() {
+sandbox_remove_workfile() {
   # Check we've got the environment variables ready.
   if [[ -z "$SandboxWorkspacePath" || -z "$SandboxOutputDevice" ]]; then
     echo "The workspace path, or the output device is missing." >$SandboxOutputDevice

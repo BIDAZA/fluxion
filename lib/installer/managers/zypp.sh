@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ -f "/etc/SuSE-release" ]; then
+if [[ -f "/etc/SuSE-release" ]]; then
   PackageManagerCLT="zypp"
   PackageManagerCLTInstallOptions="install"
   PackageManagerCLTRemoveOptions="remove"
