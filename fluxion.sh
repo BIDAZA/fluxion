@@ -61,11 +61,13 @@ fi
 # ================ < Parameter Parser Check > ================ #
 getopt --test > /dev/null # Assure enhanced getopt (returns 4).
 if [[ $? -ne 4 ]]; then
+  # Note: Using hard-coded ANSI codes here since ColorUtils.sh isn't loaded yet
   printf "\033[31mAborted, enhanced getopt isn't available.\033[0m\n"; exit 5
 fi
 
 # =============== < Working Directory Check > ================ #
 if ! mkdir -p "$FLUXIONWorkspacePath" &> /dev/null; then
+  # Note: Using hard-coded ANSI codes here since ColorUtils.sh isn't loaded yet
   printf "\033[31mAborted, can't generate a workspace directory.\033[0m\n"; exit 6
 fi
 

@@ -448,8 +448,8 @@ captive_portal_set_user_interface() {
   local -r attackPath="$FLUXIONPath/attacks/Captive Portal"
 
   # Skip setting UI if one is selected and is a custom or a generic portal.
-  if [[ "$CaptivePortalUserInterface" != "" ] && [ \
-    -d "$attackPath/sites/$CaptivePortalUserInterface.portal" -o \
+  if [[ "$CaptivePortalUserInterface" != "" ]] && [[ \
+    -d "$attackPath/sites/$CaptivePortalUserInterface.portal" || \
     -f "$attackPath/generic/languages/$CaptivePortalUserInterface.lang" ]]; then
     return 0
   fi

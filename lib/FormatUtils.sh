@@ -84,7 +84,9 @@ format_calculate_literals_length() {
     __format_calculate_literals_length__specifiers=("${FormatListSpecifiers[@]}")
   fi
 
-  FormatCalculateLiteralsLength=$((${#__format_calculate_literals_length__normalizedFormat} - (${#__format_calculate_literals_length__specifiers[@]} * 2 - ${#__format_calculate_literals_length__specifiers[@]})))
+  # Calculate total length minus the length of all specifier strings
+  # Each specifier is 2 characters (e.g., %s, %d, etc.)
+  FormatCalculateLiteralsLength=$((${#__format_calculate_literals_length__normalizedFormat} - ${#__format_calculate_literals_length__specifiers[@]}))
 }
 
 # This function calculates the total length of statics & literals in format.

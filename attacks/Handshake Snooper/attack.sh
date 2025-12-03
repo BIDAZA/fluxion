@@ -217,8 +217,7 @@ handshake_snooper_set_deauthenticator_identifier() {
 
   echo
 
-  if [[ "$HandshakeSnooperDeauthenticatorIdentifier" = \
-    "$FLUXIONGeneralBackOption" ]]; then
+  if [[ "$HandshakeSnooperDeauthenticatorIdentifier" = "$FLUXIONGeneralBackOption" ]]; then
     handshake_snooper_unset_deauthenticator_identifier
     return 1
   fi
