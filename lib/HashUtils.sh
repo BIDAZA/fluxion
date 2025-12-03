@@ -11,17 +11,17 @@ hash_check_handshake() {
   local -r handshakeAPSSID=$3
   local -r handshakeAPMAC=$4
 
-  echo "Verifier Parameters: " > $HashOutputDevice
-  echo " Verifier: $handshakeVerifier" > $HashOutputDevice
-  echo "Hash Path: $handshakePath" > $HashOutputDevice
-  echo "Hash SSID: \"$handshakeAPSSID\"" > $HashOutputDevice
-  echo " Hash MAC: $handshakeAPMAC" > $HashOutputDevice
+  echo "Verifier Parameters: " > "$HashOutputDevice"
+  echo " Verifier: $handshakeVerifier" > "$HashOutputDevice"
+  echo "Hash Path: $handshakePath" > "$HashOutputDevice"
+  echo "Hash SSID: \"$handshakeAPSSID\"" > "$HashOutputDevice"
+  echo " Hash MAC: $handshakeAPMAC" > "$HashOutputDevice"
 
   local analysis # Since it's being used in all relevant instances.
 
   case "$handshakeVerifier" in
     "pyrit")
-      readarray analysis < <(pyrit -r "$handshakePath" analyze 2> $HashOutputDevice)
+      readarray analysis < <(pyrit -r "$handshakePath" analyze 2> "$HashOutputDevice")
       if [[ "${#analysis[@]}" -eq 0 || $? != 0 ]]; then
         echo "Error: pyrit seems to be broken!" > $HashOutputDevice
         return 1

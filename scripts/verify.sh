@@ -54,7 +54,7 @@ CRITICAL_DEPS=(
 )
 
 for dep in "${CRITICAL_DEPS[@]}"; do
-    if command -v $dep &> /dev/null; then
+    if command -v "$dep" &> /dev/null; then
         echo -e "$PASS $dep - installed"
     else
         echo -e "$FAIL $dep - not found"
@@ -78,7 +78,7 @@ RECOMMENDED_DEPS=(
 )
 
 for dep in "${RECOMMENDED_DEPS[@]}"; do
-    if command -v $dep &> /dev/null; then
+    if command -v "$dep" &> /dev/null; then
         echo -e "$PASS $dep - installed"
     else
         echo -e "$WARN $dep - not found (optional)"
@@ -129,7 +129,7 @@ else
         echo "     - $iface"
         
         # Check if monitor mode is supported
-        if iw phy phy$(iw dev $iface info | grep wiphy | awk '{print $2}') info 2>/dev/null | grep -q "monitor"; then
+        if iw phy "phy$(iw dev "$iface" info | grep wiphy | awk '{print $2}')" info 2>/dev/null | grep -q "monitor"; then
             echo -e "       $PASS Monitor mode supported"
         else
             echo -e "       $WARN Monitor mode support unknown"

@@ -4,7 +4,8 @@
 # ================== < FLUXION Parameters > ================== #
 # ============================================================ #
 # Path to directory containing the FLUXION executable script.
-readonly FLUXIONPath=$(dirname $(readlink -f "$0"))
+FLUXIONPath=$(dirname "$(readlink -f "$0")")
+readonly FLUXIONPath
 
 # Path to directory containing the FLUXION library (scripts).
 readonly FLUXIONLibPath="$FLUXIONPath/lib"
@@ -60,12 +61,12 @@ fi
 # ================ < Parameter Parser Check > ================ #
 getopt --test > /dev/null # Assure enhanced getopt (returns 4).
 if [[ $? -ne 4 ]]; then
-  echo "\\033[31mAborted, enhanced getopt isn't available.\\033[0m"; exit 5
+  printf "\033[31mAborted, enhanced getopt isn't available.\033[0m\n"; exit 5
 fi
 
 # =============== < Working Directory Check > ================ #
 if ! mkdir -p "$FLUXIONWorkspacePath" &> /dev/null; then
-  echo "\\033[31mAborted, can't generate a workspace directory.\\033[0m"; exit 6
+  printf "\033[31mAborted, can't generate a workspace directory.\033[0m\n"; exit 6
 fi
 
 # Once sanity check is passed, we can start to load everything.
@@ -181,10 +182,10 @@ else
 fi
 
 # ================ < Configurable Variables > ================ #
-readonly FLUXIONPromptDefault="$CRed[${CSBlu}fluxion$CSYel@$CSWht$HOSTNAME$CClr$CRed]-[$CSYel~$CClr$CRed]$CClr "
+readonly FLUXIONPromptDefault="$CRed[\${CSBlu}fluxion\${CSYel}@\${CSWht}$HOSTNAME\${CClr}\${CRed}]-[\${CSYel}~\${CClr}\${CRed}]\${CClr} "
 FLUXIONPrompt=$FLUXIONPromptDefault
 
-readonly FLUXIONVLineDefault="$CRed[$CSYel*$CClr$CRed]$CClr"
+readonly FLUXIONVLineDefault="$CRed[\${CSYel}*\${CClr}\${CRed}]\${CClr}"
 FLUXIONVLine=$FLUXIONVLineDefault
 
 # ================== < Library Parameters > ================== #

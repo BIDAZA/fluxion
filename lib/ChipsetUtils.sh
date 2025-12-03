@@ -5,10 +5,11 @@ check_chipset() {
     if [[ "$1" == "" ]]; then printf "\033[31mInvalid input, chipset appears invalid\033[0m\n"; exit 1; fi
 
     # =================== < CONFIG > ===================
+    local CHIPSET_LIST
     if [[ -d "misc" ]]; then
-        readonly local CHIPSET_LIST="misc/devices.xml" # chipset file list
+        readonly CHIPSET_LIST="misc/devices.xml" # chipset file list
     elif [[ -d "../misc" ]]; then
-        readonly local CHIPSET_LIST="../misc/devices.xml" # chipset file list
+        readonly CHIPSET_LIST="../misc/devices.xml" # chipset file list
     else
         printf "\033[31mCan't find required resources\033[0m\n"
     fi
@@ -20,16 +21,21 @@ check_chipset() {
         echo "Can't open file"
     fi
 
-    local line=$(grep -n "$1" "$CHIPSET_LIST" | cut -d ":" -f1 | head -n 1) # get current position of chipset
-    local length=$(wc -l "$CHIPSET_LIST" | awk '{print $1}')
+    local line
+    line=$(grep -n "$1" "$CHIPSET_LIST" | cut -d ":" -f1 | head -n 1) # get current position of chipset
+    local length
+    length=$(wc -l "$CHIPSET_LIST" | awk '{print $1}')
     if [[ "$line" == "" ]]; then printf "\033[31mChipset is not in list\033[0m\n"; exit 1; fi # Catch if chipset is not present
 
     local cout=$line
     local i=$cout
     while true;do
-        local data=$(sed -n -e "${cout}p" "$CHIPSET_LIST")
-        local iden=$(echo "$data" | cut -d ">" -f1 | cut -d "<" -f2)
-        local row=$(echo "$data" | cut -d ">" -f2 | cut -d "<" -f1)
+        local data
+        data=$(sed -n -e "${cout}p" "$CHIPSET_LIST")
+        local iden
+        iden=$(echo "$data" | cut -d ">" -f1 | cut -d "<" -f2)
+        local row
+        row=$(echo "$data" | cut -d ">" -f2 | cut -d "<" -f1)
 
         if [[ "$iden" == "AP" ]]; then
             case $row in
