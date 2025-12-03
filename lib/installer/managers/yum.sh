@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ -f "/etc/redhat-release" ]; then
+if [[ -f "/etc/redhat-release" ]]; then
   PackageManagerCLT="yum"
   PackageManagerCLTInstallOptions="-y install"
   PackageManagerCLTRemoveOptions="remove"

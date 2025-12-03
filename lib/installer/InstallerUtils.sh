@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$InstallerUtilsVersion" ]; then return 0; fi
+if [[ "$InstallerUtilsVersion" ]]; then return 0; fi
 readonly InstallerUtilsVersion="1.0"
 
 InstallerUtilsWorkspacePath="/tmp/verspace"
@@ -17,7 +17,7 @@ installer_utils_run_spinner() {
   local spinstr="|/-\\"
 
   tput civis
-  while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+  while [[ "$(ps a | awk '{print $1}' | grep $pid)" ]]; do
     local temp=${spinstr#?}
     printf " [%c]  " "$spinstr"
     local spinstr=$temp${spinstr%"$temp"}
@@ -34,7 +34,7 @@ installer_utils_run_spinner() {
 # $2 version regex - Online version (regex)
 # $3 revision regex - Online version (regex)
 installer_utils_check_version() {
-  if [ ${#@} -ne 3 ]; then return 1; fi
+  if [[ ${#@} -ne 3 ]]; then return 1; fi
 
   # Attempt to retrieve versioning information from repository script.
   local -r __installer_utils_check_version__info=$(timeout -s SIGTERM 20 curl "$1" 2>/dev/null)
@@ -44,8 +44,8 @@ installer_utils_check_version() {
   local -r __installer_utils_check_version__onlineRevision=$(
     echo "$__installer_utils_check_version__info" | grep -E "$3" | grep -Eo "[0-9]+")
 
-  if [ "$__installer_utils_check_version__onlineVersion" ] && \
-    [ "$__installer_utils_check_version__onlineRevision" ]; then
+  if [[ "$__installer_utils_check_version__onlineVersion" ]] && \
+    [[ "$__installer_utils_check_version__onlineRevision" ]]; then
     echo "$__installer_utils_check_version__onlineVersion" > \
       "$InstallerUtilsWorkspacePath/latest_version"
     echo "$__installer_utils_check_version__onlineRevision" >> \
@@ -73,8 +73,8 @@ installer_utils_check_update() {
   local __installer_utils_check_update__version="?"
   local __installer_utils_check_update__revision="?"
 
-  if [ -f "$InstallerUtilsWorkspacePath/latest_version" -a \
-    -s "$InstallerUtilsWorkspacePath/latest_version" ]; then
+  if [[ -f "$InstallerUtilsWorkspacePath/latest_version" && \
+    -s "$InstallerUtilsWorkspacePath/latest_version" ]]; then
     local __installer_utils_check_update__vInfo
     mapfile -tn 2 __installer_utils_check_update__vInfo < \
       "$InstallerUtilsWorkspacePath/latest_version"
@@ -87,16 +87,16 @@ installer_utils_check_update() {
 
   echo -e "$CClr [$__installer_utils_check_update__version.$__installer_utils_check_update__revision$CClr]"
 
-  if [ \
-    "$__installer_utils_check_update__version" != "?" -a \
-    "$__installer_utils_check_update__revision" != "?" ]; then
-    if [ \
+  if [[ \
+    "$__installer_utils_check_update__version" != "?" && \
+    "$__installer_utils_check_update__revision" != "?" ]]; then
+    if [[ \
       "$__installer_utils_check_update__version" -gt \
-      "$__installer_utils_check_update__localVersion" -o \
-      "$__installer_utils_check_update__version" -eq \
-      "$__installer_utils_check_update__localVersion" -a \
+      "$__installer_utils_check_update__localVersion" || \
+      ( "$__installer_utils_check_update__version" -eq \
+      "$__installer_utils_check_update__localVersion" && \
       "$__installer_utils_check_update__revision" -gt \
-      "$__installer_utils_check_update__localRevision" ]; then
+      "$__installer_utils_check_update__localRevision" ) ]]; then
       format_center_literals "[${CBGrn}A newer version has been found!$CClr]"
       echo
       echo -e "$FormatCenterLiterals"
