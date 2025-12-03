@@ -564,6 +564,9 @@ captive_portal_get_MAC_brand() {
 
 
 captive_portal_unset_attack() {
+  # Enhanced cleanup with better error handling
+  echo "Cleaning up captive portal attack resources..." > $FLUXIONOutputDevice
+  
   sandbox_remove_workfile \
     "$FLUXIONWorkspacePath/captive_portal_authenticator.sh"
   sandbox_remove_workfile \
@@ -574,9 +577,12 @@ captive_portal_unset_attack() {
   sandbox_remove_workfile "$FLUXIONWorkspacePath/captive_portal"
 
   # Only reset the AP if one has been defined.
-  if [ "$CaptivePortalAPService" && "$(type -t ap_service_reset)" ]]; then
+  if [ "$CaptivePortalAPService" ] && [ "$(type -t ap_service_reset)" ]; then
+    echo "Resetting AP service..." > $FLUXIONOutputDevice
     ap_service_reset
   fi
+  
+  echo "Captive portal cleanup completed." > $FLUXIONOutputDevice
 }
 
 # Create different settings required for the script

@@ -146,4 +146,58 @@ io_query_file() {
   IOQueryFile=$IOQueryChoice
 }
 
+# Sanitize user input to prevent injection attacks
+io_sanitize_input() {
+  local input="$1"
+  # Remove potentially dangerous characters
+  input="${input//;/}"
+  input="${input//\$/}"
+  input="${input//\`/}"
+  input="${input//\(/}"
+  input="${input//\)/}"
+  input="${input//\|/}"
+  input="${input//&/}"
+  input="${input//>/}"
+  input="${input//</}"
+  echo "$input"
+}
+
+# Validate MAC address format
+io_validate_mac() {
+  local mac="$1"
+  if [[ "$mac" =~ ^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$ ]]; then
+    return 0
+  fi
+  return 1
+}
+
+# Validate IP address format
+io_validate_ip() {
+  local ip="$1"
+  if [[ "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+    IFS='.' read -ra ADDR <<< "$ip"
+    for i in "${ADDR[@]}"; do
+      if [ "$i" -gt 255 ]; then
+        return 1
+      fi
+    done
+    return 0
+  fi
+  return 1
+}
+
+# Validate channel number
+io_validate_channel() {
+  local channel="$1"
+  # 2.4GHz channels (1-14) and 5GHz channels
+  if [[ "$channel" =~ ^[0-9]+$ ]]; then
+    if [ "$channel" -ge 1 ] && [ "$channel" -le 14 ]; then
+      return 0
+    elif [ "$channel" -ge 36 ] && [ "$channel" -le 165 ]; then
+      return 0
+    fi
+  fi
+  return 1
+}
+
 # FLUXSCRIPT END

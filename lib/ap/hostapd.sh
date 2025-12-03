@@ -45,7 +45,10 @@ ap_service_route() {
 }
 
 ap_service_prep() {
-  if [[ ${#@} -lt 5 ]]; then return 1; fi
+  if [[ ${#@} -lt 5 ]]; then 
+    echo "Error: Insufficient parameters for AP service" > $FLUXIONOutputDevice
+    return 1
+  fi
   
   APServiceInterface=$1
   APServiceInterfaceAddress=$2
@@ -53,21 +56,34 @@ ap_service_prep() {
   APServiceMAC=$4
   APServiceChannel=$5
   
+  # Validate interface exists
+  if [ ! -d "/sys/class/net/$APServiceInterface" ]; then
+    echo "Error: Interface $APServiceInterface does not exist" > $FLUXIONOutputDevice
+    return 2
+  fi
+  
   ap_service_stop
 
-  # Prepare the hostapd config file.
+  # Prepare the hostapd config file with enhanced security options
   echo "\
 interface=$APServiceInterface
 driver=nl80211
 ssid=$APServiceSSID
-channel=$APServiceChannel" \
+channel=$APServiceChannel
+hw_mode=g
+ieee80211n=1
+wmm_enabled=1
+macaddr_acl=0
+ignore_broadcast_ssid=0" \
   > "$APServiceConfigDirectory/$APServiceMAC-hostapd.conf"
 
   # Spoof virtual interface MAC address.
   ip link set $APServiceInterface down
   sleep 0.5
 
-  macchanger --mac=$APServiceMAC $APServiceInterface &> $FLUXIONOutputDevice
+  if ! macchanger --mac=$APServiceMAC $APServiceInterface &> $FLUXIONOutputDevice; then
+    echo "Warning: Failed to change MAC address" > $FLUXIONOutputDevice
+  fi
   sleep 0.5
 
   ip link set $APServiceInterface up

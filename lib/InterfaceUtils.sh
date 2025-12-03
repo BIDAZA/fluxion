@@ -17,13 +17,44 @@ fi
 
 # Checks if the interface belongs to a physical device.
 interface_is_real() {
+  if [ -z "$1" ]; then
+    echo "Error: No interface specified" >&2
+    return 2
+  fi
   test -d /sys/class/net/$1/device
   return $?
 }
 
 # Checks if the interface belongs to a wireless device.
 interface_is_wireless() {
+  if [ -z "$1" ]; then
+    echo "Error: No interface specified" >&2
+    return 2
+  fi
   grep -qs "DEVTYPE=wlan" /sys/class/net/$1/uevent
+  return $?
+}
+
+# Validates if interface exists
+interface_exists() {
+  if [ -z "$1" ]; then
+    echo "Error: No interface specified" >&2
+    return 2
+  fi
+  test -d /sys/class/net/$1
+  return $?
+}
+
+# Checks if interface is in monitor mode
+interface_is_monitor() {
+  if [ -z "$1" ]; then
+    echo "Error: No interface specified" >&2
+    return 2
+  fi
+  if ! interface_exists "$1"; then
+    return 1
+  fi
+  iw dev "$1" info 2>/dev/null | grep -q "type monitor"
   return $?
 }
 
