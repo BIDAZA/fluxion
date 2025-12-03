@@ -129,8 +129,8 @@ class wifijammer:
                     self.mChannel = self.mChannels[0]
                     try:
                         pyw.chset(interface, int(self.mChannel), None)
-                    except:
-                        sys.stderr.write("Channel Hopping Failed")
+                    except Exception as e:
+                        sys.stderr.write(f"Channel Hopping Failed: {e}\n")
             else:
 
                 with threadLock:
@@ -145,8 +145,8 @@ class wifijammer:
 
                 try:
                     pyw.chset(interface, int(self.mChannel), None)
-                except:
-                    sys.stderr.write("Channel Hopping Failed")
+                except Exception as e:
+                    sys.stderr.write(f"Channel Hopping Failed: {e}\n")
 
             self.output()
 
@@ -293,7 +293,7 @@ class wifijammer:
 
 
                 ap_channel = ord(dot11elt.info[-int(dot11elt.len):-int(dot11elt.len)+1])
-        except:
+        except (AttributeError, TypeError, ValueError, IndexError) as e:
             ap_channel = self.mChannel
 
             # print(ap_channel, self.mChannels, self.mChannel, ap_channel)
