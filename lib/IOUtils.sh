@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
-if [ "$IOUtilsVersion" ]; then return 0; fi
+if [[ "$IOUtilsVersion" ]]; then return 0; fi
 readonly IOUtilsVersion="1.0"
 
-if [ ! "$FLUXIONLibPath" ]; then return 1; fi
+if [[ ! "$FLUXIONLibPath" ]]; then return 1; fi
 
 IOUtilsHeader="[x] ================================ [x]"
 IOUtilsQueryMark="[-] "
 IOUtilsPrompt="[$USER@$HOSTNAME]> "
 
-if [ ! "$ArrayUtilsVersion" ]; then
+if [[ ! "$ArrayUtilsVersion" ]]; then
   source "$FLUXIONLibPath/ArrayUtils.sh"
 fi
 
 io_input_choice() {
   local __io_input_choice__choice
-  until [ ! -z "$__io_input_choice__choice" ]; do
+  until [[ ! -z "$__io_input_choice__choice" ]]; do
     echo -ne "$IOUtilsPrompt"
 
     local __io_input_choice__input
@@ -24,7 +24,7 @@ io_input_choice() {
     local __io_input_choice__choices
     for __io_input_choice__choices in ${@}; do
       array_contains $__io_input_choice__choices "$__io_input_choice__input"
-      if [ $? -eq 0 ]; then
+      if [[ $? -eq 0 ]]; then
         __io_input_choice__choice="$__io_input_choice__input"
         break
       fi
@@ -95,8 +95,8 @@ io_query_format_fields() {
   local __io_query_format_fields__record_count=${#__io_query_format_fields__f3[@]}
   local __io_query_format_fields__indexes=($(seq $__io_query_format_fields__record_count))
 
-  if [ ! -z "$1" ]; then
-    if [ "$(type -t $(echo -e "$IOUtilsHeader" | grep -vE '\s'))" = "function" ]; then $IOUtilsHeader
+  if [[ ! -z "$1" ]]; then
+    if [[ "$(type -t $(echo -e "$IOUtilsHeader" | grep -vE '\s'))" = "function" ]]; then $IOUtilsHeader
     else echo -e "$IOUtilsHeader"; fi
 
     echo -e "$__io_query_format_fields__query"
@@ -117,11 +117,11 @@ io_query_format_fields() {
 
 io_query_choice() {
   # Assure we've got required parameters.
-  if [ ${#@} -lt 2 ]; then
+  if [[ ${#@} -lt 2 ]]; then
     return 1
   fi
 
-  __io_query_choice__query=$([ -z "$1" ] && echo -n "" || echo -ne "$FLUXIONVLine $1\n")
+  __io_query_choice__query=$([[ -z "$1" ]] && echo -n "" || echo -ne "$FLUXIONVLine $1\n")
   io_query_format_fields "$__io_query_choice__query" "\t$CRed[$CSYel%d$CClr$CRed]$CClr %b\n" $2
 
   IOQueryChoice="${IOQueryFormatFields[0]}"

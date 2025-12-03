@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$ArrayUtilsVersion" ]; then return 0; fi
+if [[ "$ArrayUtilsVersion" ]]; then return 0; fi
 readonly ArrayUtilsVersion="1.0"
 
 # Due to the fact we're passing arrays via indirection,
@@ -10,7 +10,7 @@ readonly ArrayUtilsVersion="1.0"
 # "choice" identifier in the input_choice function.
 # Eventually, input_choice's "choice" variable will
 # be indirectly expanded rather than the choice array.
-function array_contains() {
+array_contains() {
   local __array_contains__item
 
   # An efficient way to pass arrays around in bash

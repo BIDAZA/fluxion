@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$ColorUtilsVersion" ]; then return 0; fi
+if [[ "$ColorUtilsVersion" ]]; then return 0; fi
 readonly ColorUtilsVersion="1.0"
 
 ################################# < Shell Color Codes > ################################

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-if [ "$HashUtilsVersion" ]; then return 0; fi
+if [[ "$HashUtilsVersion" ]]; then return 0; fi
 readonly HashUtilsVersion="1.0"
 
 HashOutputDevice="/dev/stdout"
 
-function hash_check_handshake() {
+hash_check_handshake() {
   local -r handshakeVerifier=$1
   local -r handshakePath=$2
   local -r handshakeAPSSID=$3
@@ -22,14 +22,14 @@ function hash_check_handshake() {
   case "$handshakeVerifier" in
     "pyrit")
       readarray analysis < <(pyrit -r "$handshakePath" analyze 2> $HashOutputDevice)
-      if [ "${#analysis[@]}" -eq 0 -o $? != 0 ]; then
+      if [[ "${#analysis[@]}" -eq 0 || $? != 0 ]]; then
         echo "Error: pyrit seems to be broken!" > $HashOutputDevice
         return 1
       fi
 
       local hashMeta=$(echo "${analysis[@]}" | grep -F "AccessPoint ${handshakeAPMAC,,} ('$handshakeAPSSID')")
 
-      if [ "$hashMeta" ]; then
+      if [[ "$hashMeta" ]]; then
         local hashID=$(echo "$hashMeta" | awk -F'[ #:]' '{print $3}')
         local hashData=$(echo "${analysis[@]}" | awk "\$0~/#$hashID: HMAC_(SHA[0-9]+_AES|MD5_RC4)/{ print \$0 }")
       else
@@ -38,7 +38,7 @@ function hash_check_handshake() {
       ;;
     "aircrack-ng")
       readarray analysis < <(aircrack-ng "$handshakePath" 2> $HashOutputDevice)
-      if [ "${#analysis[@]}" -eq 0 -o $? != 0 ]; then
+      if [[ "${#analysis[@]}" -eq 0 || $? != 0 ]]; then
         echo "Error: aircrack-ng seems to be broken!" > $HashOutputDevice
         return 1
       fi
@@ -47,7 +47,7 @@ function hash_check_handshake() {
       ;;
     "cowpatty")
       readarray analysis < <(aircrack-ng "$handshakePath" 2> $HashOutputDevice)
-      if [ "${#analysis[@]}" -eq 0 -o $? != 0 ]; then
+      if [[ "${#analysis[@]}" -eq 0 || $? != 0 ]]; then
         echo "Error: cowpatty (aircrack-ng) seems to be broken!" > $HashOutputDevice
         return 1
       fi
@@ -62,7 +62,7 @@ function hash_check_handshake() {
       ;;
   esac
 
-  if [ -z "$hashData" ]; then
+  if [[ -z "$hashData" ]]; then
     echo "Handshake for $handshakeAPSSID ($handshakeAPMAC) is missing!"
     return 1
   fi
@@ -84,7 +84,7 @@ function hash_check_handshake() {
       fi ;;
   esac
 
-  if [ -z "$hashResult" ]; then
+  if [[ -z "$hashResult" ]]; then
     echo "Invalid hash for $handshakeAPSSID ($handshakeAPMAC)!" > $HashOutputDevice
     HASHCheckHandshake="invalid"
     return 1
