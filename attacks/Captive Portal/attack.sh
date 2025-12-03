@@ -577,7 +577,7 @@ captive_portal_unset_attack() {
   sandbox_remove_workfile "$FLUXIONWorkspacePath/captive_portal"
 
   # Only reset the AP if one has been defined.
-  if [ "$CaptivePortalAPService" ] && [ "$(type -t ap_service_reset)" ]; then
+  if [ "$CaptivePortalAPService" ] && [ "$(type -t ap_service_reset)" = "function" ]; then
     echo "Resetting AP service..." > $FLUXIONOutputDevice
     ap_service_reset
   fi

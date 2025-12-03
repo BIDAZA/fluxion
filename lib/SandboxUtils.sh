@@ -90,9 +90,14 @@ sandbox_secure_remove() {
   fi
   
   if [ -f "$target" ]; then
-    # Overwrite with random data before deletion (for sensitive files)
-    dd if=/dev/urandom of="$target" bs=$(stat -c%s "$target") count=1 conv=notrunc &>/dev/null 2>&1
-    shred -vfz -n 3 "$target" &>/dev/null 2>&1 || rm -f "$target"
+    # For files, use shred if available for secure deletion
+    if command -v shred &>/dev/null; then
+      shred -vfz -n 3 "$target" &>/dev/null 2>&1
+    else
+      # Fallback: overwrite with zeros (faster than random)
+      dd if=/dev/zero of="$target" bs=4K count=1 conv=notrunc &>/dev/null 2>&1
+      rm -f "$target"
+    fi
     return 0
   elif [ -d "$target" ]; then
     # For directories, use regular removal

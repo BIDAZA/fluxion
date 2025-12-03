@@ -64,7 +64,7 @@ ap_service_prep() {
   
   ap_service_stop
 
-  # Prepare the hostapd config file with enhanced security options
+  # Prepare the hostapd config file with enhanced options
   echo "\
 interface=$APServiceInterface
 driver=nl80211

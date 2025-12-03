@@ -175,8 +175,8 @@ install_dependencies() {
 # Install Python dependencies
 install_python_deps() {
     echo -e "${YELLOW}Installing Python dependencies...${NC}"
-    pip3 install --upgrade pip 2>/dev/null || pip install --upgrade pip
-    pip3 install scapy pyric 2>/dev/null || pip install scapy pyric
+    python3 -m pip install --upgrade pip
+    python3 -m pip install scapy pyric
 }
 
 # Main installation

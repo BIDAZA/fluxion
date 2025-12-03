@@ -55,8 +55,7 @@ CRITICAL_DEPS=(
 
 for dep in "${CRITICAL_DEPS[@]}"; do
     if command -v $dep &> /dev/null; then
-        version=$(command -v $dep | xargs file 2>/dev/null | grep -q "executable" && echo "installed" || echo "installed")
-        echo -e "$PASS $dep - $version"
+        echo -e "$PASS $dep - installed"
     else
         echo -e "$FAIL $dep - not found"
         ALL_OK=false
