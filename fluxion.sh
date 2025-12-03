@@ -182,10 +182,10 @@ else
 fi
 
 # ================ < Configurable Variables > ================ #
-readonly FLUXIONPromptDefault="$CRed[\${CSBlu}fluxion\${CSYel}@\${CSWht}$HOSTNAME\${CClr}\${CRed}]-[\${CSYel}~\${CClr}\${CRed}]\${CClr} "
+readonly FLUXIONPromptDefault="$CRed[${CSBlu}fluxion${CSYel}@${CSWht}$HOSTNAME${CClr}${CRed}]-[${CSYel}~${CClr}${CRed}]${CClr} "
 FLUXIONPrompt=$FLUXIONPromptDefault
 
-readonly FLUXIONVLineDefault="$CRed[\${CSYel}*\${CClr}\${CRed}]\${CClr}"
+readonly FLUXIONVLineDefault="$CRed[${CSYel}*${CClr}${CRed}]${CClr}"
 FLUXIONVLine=$FLUXIONVLineDefault
 
 # ================== < Library Parameters > ================== #
