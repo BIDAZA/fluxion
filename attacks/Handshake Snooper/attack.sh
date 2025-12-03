@@ -17,7 +17,7 @@ handshake_snooper_header() {
 # ============= < Handshake Snooper Subroutines > ============ #
 # ============================================================ #
 handshake_snooper_arbiter_daemon() {
-  if [ ${#@} -lt 1 -o "$HandshakeSnooperState" != "Running" ]]; then
+  if [[ ${#@} -lt 1 || "$HandshakeSnooperState" != "Running" ]]; then
     return 1;
   fi
 
@@ -28,7 +28,7 @@ handshake_snooper_arbiter_daemon() {
 
   handshake_snooper_arbiter_daemon_abort() {
     handshake_snooper_arbiter_daemon_state="aborted"
-    if [ "$handshake_snooper_arbiter_daemon_viewerPID" ]]; then
+    if [[ "$handshake_snooper_arbiter_daemon_viewerPID" ]]; then
       kill $handshake_snooper_arbiter_daemon_viewerPID
     fi
 
@@ -73,7 +73,7 @@ handshake_snooper_arbiter_daemon() {
     wait $! # Using wait to asynchronously catch flags while waiting.
 
     # If synchronously searching, stop the captor and deauthenticator before checking.
-    if [ "$HandshakeSnooperVerifierSynchronicity" = "blocking" ]]; then
+    if [[ "$HandshakeSnooperVerifierSynchronicity" = "blocking" ]]; then
       now=$(env -i date '+%H:%M:%S')
       echo -e "[$now] $HandshakeSnooperStoppingForVerifierNotice" >> \
         "$FLUXIONWorkspacePath/handshake_snooper.log"
@@ -82,7 +82,7 @@ handshake_snooper_arbiter_daemon() {
       mv "$FLUXIONWorkspacePath/capture/dump-01.cap" \
         "$FLUXIONWorkspacePath/capture/recent.cap"
     else
-      if [ -x "$(command -v pyrit)" ]]; then
+      if [[ -x "$(command -v pyrit)" ]]; then
         pyrit -r "$FLUXIONWorkspacePath/capture/dump-01.cap" \
           -o "$FLUXIONWorkspacePath/capture/recent.cap" stripLive &> \
           $FLUXIONOutputDevice
@@ -101,7 +101,7 @@ handshake_snooper_arbiter_daemon() {
     handshake_snooper_arbiter_daemon_verified=$?
 
     # If synchronously searching, restart the captor and deauthenticator after checking.
-    if [ "$HandshakeSnooperVerifierSynchronicity" = "blocking" -a \
+    if [[ "$HandshakeSnooperVerifierSynchronicity" = "blocking" && \
       $handshake_snooper_arbiter_daemon_verified -ne 0 ]]; then
       sandbox_remove_workfile "$FLUXIONWorkspacePath/capture/*"
 
