@@ -39,13 +39,13 @@ FLUXIONEnable5GHZ=0
 # ============================================================ #
 # ================= < Script Sanity Checks > ================= #
 # ============================================================ #
-if [ $EUID -ne 0 ]; then # Super User Check
+if [[ $EUID -ne 0 ]]; then # Super User Check
   echo -e "\\033[31mAborted, please execute the script as root.\\033[0m"; exit 1
 fi
 
 # ===================== < XTerm Checks > ===================== #
 # TODO: Run the checks below only if we're not using tmux.
-if [ ! "${DISPLAY:-}" ]; then # Assure display is available.
+if [[ ! "${DISPLAY:-}" ]]; then # Assure display is available.
   echo -e "\\033[31mAborted, X (graphical) session unavailable.\\033[0m"; exit 2
 fi
 
@@ -59,7 +59,7 @@ fi
 
 # ================ < Parameter Parser Check > ================ #
 getopt --test > /dev/null # Assure enhanced getopt (returns 4).
-if [ $? -ne 4 ]; then
+if [[ $? -ne 4 ]]; then
   echo "\\033[31mAborted, enhanced getopt isn't available.\\033[0m"; exit 5
 fi
 
@@ -97,7 +97,7 @@ fi
 
 AttackCLIArguments=${FLUXIONCLIArguments##* -- }
 readonly FLUXIONCLIArguments=${FLUXIONCLIArguments%%-- *}
-if [ "$AttackCLIArguments" = "$FLUXIONCLIArguments" ]; then
+if [[ "$AttackCLIArguments" = "$FLUXIONCLIArguments" ]]; then
   AttackCLIArguments=""
 fi
 
@@ -110,7 +110,7 @@ fi
 eval set -- "$FLUXIONCLIArguments" # Set environment parameters.
 
 #[ "$1" != "--" ] && readonly FLUXIONAuto=1 # Auto-mode if using CLI.
-while [ "$1" != "" ] && [ "$1" != "--" ]; do
+while [[ "$1" != "" && "$1" != "--" ]]; do
   case "$1" in
     -v|--version) echo "FLUXION V$FLUXIONVersion.$FLUXIONRevision"; exit;;
     -h|--help) fluxion_help; exit;;
@@ -142,7 +142,7 @@ shift # Remove "--" to prepare for attacks to read parameters.
 # Load user-defined preferences if there's an executable script.
 # If no script exists, prepare one for the user to store config.
 # WARNING: Preferences file must assure no redeclared constants.
-if [ -x "$FLUXIONPreferencesFile" ]; then
+if [[ -x "$FLUXIONPreferencesFile" ]]; then
   source "$FLUXIONPreferencesFile"
 else
   echo '#!/usr/bin/env bash' > "$FLUXIONPreferencesFile"
@@ -150,28 +150,28 @@ else
 fi
 
 # ================ < Configurable Constants > ================ #
-if [ "$FLUXIONAuto" != "1" ]; then # If defined, assure 1.
+if [[ "$FLUXIONAuto" != "1" ]]; then # If defined, assure 1.
   readonly FLUXIONAuto=${FLUXIONAuto:+1}
 fi
 
-if [ "$FLUXIONDebug" != "1" ]; then # If defined, assure 1.
+if [[ "$FLUXIONDebug" != "1" ]]; then # If defined, assure 1.
   readonly FLUXIONDebug=${FLUXIONDebug:+1}
 fi
 
-if [ "$FLUXIONAirmonNG" != "1" ]; then # If defined, assure 1.
+if [[ "$FLUXIONAirmonNG" != "1" ]]; then # If defined, assure 1.
   readonly FLUXIONAirmonNG=${FLUXIONAirmonNG:+1}
 fi
 
-if [ "$FLUXIONWIKillProcesses" != "1" ]; then # If defined, assure 1.
+if [[ "$FLUXIONWIKillProcesses" != "1" ]]; then # If defined, assure 1.
   readonly FLUXIONWIKillProcesses=${FLUXIONWIKillProcesses:+1}
 fi
 
-if [ "$FLUXIONWIReloadDriver" != "1" ]; then # If defined, assure 1.
+if [[ "$FLUXIONWIReloadDriver" != "1" ]]; then # If defined, assure 1.
   readonly FLUXIONWIReloadDriver=${FLUXIONWIReloadDriver:+1}
 fi
 
 # FLUXIONDebug [Normal Mode "" / Developer Mode 1]
-if [ $FLUXIONDebug ]; then
+if [[ $FLUXIONDebug ]]; then
   :> /tmp/fluxion.debug.log
   readonly FLUXIONOutputDevice="/tmp/fluxion.debug.log"
   readonly FLUXIONHoldXterm="-hold"
@@ -454,7 +454,7 @@ fluxion_conditional_bail() {
 }
 
 # ERROR Report only in Developer Mode
-if [ $FLUXIONDebug ]; then
+if [[ $FLUXIONDebug ]]; then
   fluxion_error_report() {
     echo "Exception caught @ line #$1"
   }
@@ -463,7 +463,7 @@ if [ $FLUXIONDebug ]; then
 fi
 
 fluxion_handle_abort_attack() {
-  if [ $(type -t stop_attack) ]; then
+  if [[ $(type -t stop_attack) ]]; then
     stop_attack &> $FLUXIONOutputDevice
     unprep_attack &> $FLUXIONOutputDevice
   else
@@ -681,7 +681,7 @@ fluxion_do_sequence() {
   # Start sequence with the first instruction available.
   local __fluxion_do_sequence__instructionIndex=0
   local __fluxion_do_sequence__instruction=${__fluxion_do_sequence__sequence[0]}
-  while [ "$__fluxion_do_sequence__instruction" ]; do
+  while [[ "$__fluxion_do_sequence__instruction" ]]; do
     if ! fluxion_do $__fluxion_do_sequence__namespace $__fluxion_do_sequence__instruction; then
       if ! fluxion_undo $__fluxion_do_sequence__namespace; then
         return -2
@@ -694,7 +694,7 @@ fluxion_do_sequence() {
 
       __fluxion_do_sequence__instructionIndex=${__fluxion_do_sequence__index["$FluxionDone"]}
 
-      if [ ! "$__fluxion_do_sequence__instructionIndex" ]; then
+      if [[ ! "$__fluxion_do_sequence__instructionIndex" ]]; then
         return -4
       fi
     else
@@ -993,7 +993,7 @@ fluxion_next_assignable_interface() {
   # Find next available interface by checking global.
   local -r prefix=$1
   local index=0
-  while [ "${FluxionInterfaces[$prefix$index]}" ]; do
+  while [[ "${FluxionInterfaces[$prefix$index]}" ]]; do
     let index++
   done
   FluxionNextAssignableInterface="$prefix$index"
@@ -1685,7 +1685,7 @@ fluxion_hash_set_path() {
     fi
   fi
 
-  while [ ! "$FluxionHashPath" ]; do
+  while [[ ! "$FluxionHashPath" ]]; do
     fluxion_header
 
     echo
@@ -1924,7 +1924,7 @@ fluxion_run_attack() {
 # ================= < Argument Executables > ================= #
 # ============================================================ #
 eval set -- "$FLUXIONCLIArguments" # Set environment parameters.
-while [ "$1" != "" -a "$1" != "--" ]; do
+while [[ "$1" != "" && "$1" != "--" ]]; do
   case "$1" in
     -t|--target) echo "Not yet implemented!"; sleep 3; fluxion_shutdown;;
   esac

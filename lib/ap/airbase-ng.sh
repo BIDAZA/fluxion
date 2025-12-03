@@ -9,15 +9,15 @@
 #if [ "$APServiceVersion" ]; then return 0; fi
 #readonly APServiceVersion="1.0"
 
-function ap_service_stop() {
-  if [ "$APServicePID" ]; then
+ap_service_stop() {
+  if [[ "$APServicePID" ]]; then
     kill $APServicePID &> $FLUXIONOutputDevice
   fi
 
   APServicePID=""
 }
 
-function ap_service_reset() {
+ap_service_reset() {
   ap_service_stop
 
   APServiceAccessInterface=""
@@ -29,11 +29,11 @@ function ap_service_reset() {
   APServiceInterface=""
 }
 
-function ap_service_route() {
+ap_service_route() {
   local networkSubnet=${APServiceInterfaceAddress%.*}
   local networkAddress=$(( ( ${APServiceInterfaceAddress##*.} + 1 ) % 255 ))
 
-  if [ $hostID -eq 0 ]; then
+  if [[ $hostID -eq 0 ]]; then
     let hostID++
   fi
 
@@ -48,8 +48,8 @@ function ap_service_route() {
   fi
 }
 
-function ap_service_prep() {
-  if [ ${#@} -lt 5 ]; then return 1; fi
+ap_service_prep() {
+  if [[ ${#@} -lt 5 ]]; then return 1; fi
 
   APServiceInterface=$1
   APServiceInterfaceAddress=$2
@@ -67,7 +67,7 @@ function ap_service_prep() {
   APServiceAccessInterface="at0"
 }
 
-function ap_service_start() {
+ap_service_start() {
   ap_service_stop
 
   xterm $FLUXIONHoldXterm $TOP -bg "#000000" -fg "#FFFFFF" \
@@ -77,7 +77,7 @@ function ap_service_start() {
   local parentPID=$!
 
   # Wait till airebase-ng starts and creates the extra virtual interface.
-  while [ ! "$APServicePID" ]; do
+  while [[ ! "$APServicePID" ]]; do
     sleep 1
     APServicePID=$(pgrep -P $parentPID)
   done
